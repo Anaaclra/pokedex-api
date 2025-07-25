@@ -1,28 +1,31 @@
 package com.project.pokedex.controller;
 
 import com.project.pokedex.entities.Pokemon;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.project.pokedex.service.PokemonService;
 
-
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/v1/pokemon")
 public class PokemonController {
 
     private final PokemonService pokemonService;
 
-    public PokemonController(PokemonService pokemonService) {
-        this.pokemonService = pokemonService;
-    }//Construtor para o metodo private final
-
     // Endpoint POST
+    //implementado exceção
     @PostMapping
     public ResponseEntity<String> adicionarPokemon(@RequestBody Pokemon pokemon) {
-        pokemonService.adicionarPokemon(pokemon);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Pokemon registrado com sucesso.");
+        try {
+            pokemonService.adicionarPokemon(pokemon);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Pokemon registrado com sucesso.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
+
     // Endpoint GET
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarPokemon(@PathVariable Integer id) {
